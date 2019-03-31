@@ -11,6 +11,7 @@ import UIKit
 class CadastroViewController: UIViewController {
 
     var tarefa : Tarefa?
+    var gerenciadorTarefa = GerenciadorTarefa()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,20 +51,32 @@ class CadastroViewController: UIViewController {
             
             if (tarefa == nil) {
                 tarefa = Tarefa(titulo: titulo, descricao: descricao, dataLimite: dataLimite, responsavel: responsavel)
+                gerenciadorTarefa.tarefas.append(tarefa!)
             } else {
-                tarefa?.dataLimite = dataLimite
-                tarefa?.descricao = descricao
-                tarefa?.titulo = titulo
-                tarefa?.responsavel = responsavel
+                if let tarefaGerenciador = gerenciadorTarefa.procuraTarefa(tituloTarefa: tarefa!.titulo) {
+                    tarefaGerenciador.dataLimite = dataLimite
+                    tarefaGerenciador.descricao = descricao
+                    tarefaGerenciador.titulo = titulo
+                    tarefaGerenciador.responsavel = responsavel
+                    
+                    tarefa = tarefaGerenciador
+                    /* Se por algum motivo bizarro não localizar a tarefa no gerenciador, trabalha com o objeto existente e atualiza posteriormente o gerenciador para conter a tarefa */
+                } else {
+                    tarefa?.dataLimite = dataLimite
+                    tarefa?.descricao = descricao
+                    tarefa?.titulo = titulo
+                    tarefa?.responsavel = responsavel
+                    
+                    gerenciadorTarefa.tarefas.append(tarefa!)
+                }
             }
             
             let detalheViewController = segue.destination
                 as! DetalheViewController
             
             detalheViewController.tarefa = tarefa
+            
         }
-        
-        
     }
     
     
